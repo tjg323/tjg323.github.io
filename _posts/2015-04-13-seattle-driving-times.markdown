@@ -5,7 +5,7 @@ date:   2015-04-13 19:47:51
 categories: data
 ---
 
-How much does a little rain actually affect Seattle drivers' abilities? Every time it rains, it seems like everyone moves a bit slower and it takes twice as long to get anywhere. I set out to examine this a bit more closely and over the months November to February, I programattically logged travel times for my commute (Redmond to Ballard) at a 5 minute granularity. Along with just transit times, other current weather conditions have been logged just in case there is some other, better indicator of travel times.
+How much does a little rain actually affect Seattle drivers' abilities? Every time it rains, it seems like everyone moves a bit slower and it takes twice as long to get anywhere. I set out to examine this a bit more analytically and over the months November to February, I programattically logged travel times for my commute (Redmond to Ballard) at a 5 minute granularity. Along with just transit times, other current weather conditions have been logged just in case there is some other, better indicator of travel times.
 
 A very quick analysis shows a surprising result: **rain really doesn't affect driving times that much**; it seems to only add a little over a minute to a rush hour commute. The largest factors (obviously) are day of week and time of day, but presence of rain seems to also have a statistically significant affect of ~1 minute. All this is to be taken with a grain of salt, as this is a very quick examination, but the data is there for anyone to pick up and run with.
 
@@ -105,6 +105,7 @@ Other findings include the fact that commutes generally get worse as the week go
   <th>Kurtosis:</th>      <td> 6.669</td>  <th>  Cond. No.          </th> <td>2.13e+04</td> 
 </tr>
 </table>
+
 
 
 The code to log my travel times can be found [here](https://github.com/tjg323/TravelTimes), the full ipython notebook file can be found [here](/Resources/TravelTimes/TravelTimes.ipynb), and the original data can be found [here](/Resources/TravelTimes/travel.csv).
