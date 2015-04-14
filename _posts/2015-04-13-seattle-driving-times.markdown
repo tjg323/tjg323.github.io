@@ -9,75 +9,6 @@ How much does a little rain actually affect Seattle drivers' abilities? Every ti
 
 A very quick analysis shows a surprising result: **rain really doesn't affect driving times that much**; it seems to only add a little over a minute to a rush hour commute. The largest factors (obviously) are day of week and time of day, but presence of rain seems to also have a statistically significant affect of ~1 minute. All this is to be taken with a grain of salt, as this is a very quick examination, but the data is there for anyone to pick up and run with.
 
-Other findings include the fact that Thursdays and Fridays compete for the worst commutes and the fact that it only snowed once during this period (11/29) for about 3 hours.
-
-    import pandas as pd
-    import numpy as np
-    import statsmodels.api as sm
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    import statsmodels.formula.api as smf
-    import datetime
-    import time
-    from time import mktime
-    
-    %pylab inline
-    
-    sns.set_context("notebook")
-
-    # Read in the data
-    df = pd.read_csv('www.thomasgaid.us/Resources/TravelTimes/travel.csv')
-
-    # Convert time of day to minutes after midnight
-    def convertToMinutesAfterMidnight(date):
-        dateT = datetime.datetime.strptime(date,"%Y-%m-%dt%H:%M:%S.000Z")
-        midnight = dateT.replace(hour=0, minute=0, second=0, microsecond=0)
-        timesince = (dateT - midnight)
-        minutes = int(timesince.total_seconds() / 60)
-        return minutes
-    
-    def convertColumnToMinutesAfterMidnight(series):
-        return convertToMinutesAfterMidnight(series['time'])
-    
-    # From the datetime get the day of week
-    def getDayOfWeek(date):
-        dateT = datetime.datetime.strptime(date,"%Y-%m-%dt%H:%M:%S.000Z")    
-        dayNum =  str(dateT.weekday())
-        return convertToDay(dayNum)
-        
-    def convertToDay(date):
-        return {
-            '0': 'Monday',
-            '1': 'Tuesday',
-            '2': 'Wednesday',
-            '3': 'Thursday',
-            '4': 'Friday',
-            '5': 'Saturday',
-            '6': 'Sunday'
-        }[date]
-    
-    def convertColumnToDayOfWeek(series):
-        return getDayOfWeek(series['time'])
-
-    # Also convert travel time from seconds to minutes
-    df['minutesMidnight'] = df.apply(convertColumnToMinutesAfterMidnight,axis=1)
-    df['dayOfWeek'] = df.apply(convertColumnToDayOfWeek,axis=1)
-    df['WorkToHomeMinutes'] = df.WorkToHome.apply(lambda x: x/60)
-
-    # Plot the travel times by day, shaded by precip type
-    sns.lmplot("minutesMidnight", "WorkToHomeMinutes", col="dayOfWeek", data=df, hue = "precipType", col_order = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']);
-
-![png](/Resources/TravelTimes/TravelTimes1.png)
-
-    # Get just from 4:00 to 7:00 on weekdays where it is raining or not raining
-    dfrush = df[df['minutesMidnight'].isin(range(960,1140))]
-    dfworkweekrush = dfrush[dfrush['dayOfWeek'].isin(['Monday','Tuesday','Wednesday','Thursday','Friday'])]
-    dfcleaned = dfworkweekrush[dfworkweekrush['precipType'].isin(['null','rain'])]
-
-    # Group the rush hour times by precip type
-    groupedday = dfcleaned['WorkToHomeMinutes'].groupby([dfcleaned['dayOfWeek'],dfcleaned['precipType']])
-    groupedday.mean()
-
     dayOfWeek  precipType
     Friday     null          42.566265
                rain          43.046512
@@ -90,6 +21,15 @@ Other findings include the fact that Thursdays and Fridays compete for the worst
     Wednesday  null          40.943820
                rain          41.930556
     Name: WorkToHomeMinutes, dtype: float64
+
+Other findings include the fact that commutes generally get worse as the week goes on and the fact that it only snowed once during this period (11/29) for about 3 hours.
+
+![png](/Resources/TravelTimes/TravelTimes2.png)
+    
+    # Plot the travel times by day, shaded by precip type
+    sns.lmplot("minutesMidnight", "WorkToHomeMinutes", col="dayOfWeek", data=df, hue = "precipType", col_order = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']);
+
+![png](/Resources/TravelTimes/TravelTimes1.png)
 
     # Linear regression of travel times with day of week, precip type, and minutes after midnight
     est = smf.ols(formula='WorkToHomeMinutes ~ dayOfWeek + precipType + minutesMidnight', data=dfcleaned).fit()
@@ -165,13 +105,5 @@ Other findings include the fact that Thursdays and Fridays compete for the worst
   <th>Kurtosis:</th>      <td> 6.669</td>  <th>  Cond. No.          </th> <td>2.13e+04</td> 
 </tr>
 </table>
-
-    # Plot each day's rush hour
-    sns.boxplot(dfcleaned["WorkToHomeMinutes"], dfcleaned["dayOfWeek"],order = ['Monday','Tuesday','Wednesday','Thursday','Friday'])
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x20cfbda0>
-
-![png](/Resources/TravelTimes/TravelTimes2.png)
-
 
 The code to log my travel times can be found [here](https://github.com/tjg323/TravelTimes), the full ipython notebook file can be found [here](/Resources/TravelTimes/TravelTimes.ipynb), and the original data can be found [here](/Resources/TravelTimes/travel.csv).
