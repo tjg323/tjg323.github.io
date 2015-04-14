@@ -106,4 +106,5 @@ Other findings include the fact that commutes generally get worse as the week go
 </tr>
 </table>
 
+
 The code to log my travel times can be found [here](https://github.com/tjg323/TravelTimes), the full ipython notebook file can be found [here](/Resources/TravelTimes/TravelTimes.ipynb), and the original data can be found [here](/Resources/TravelTimes/travel.csv).
